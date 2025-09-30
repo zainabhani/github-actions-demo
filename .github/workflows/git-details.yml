@@ -1,0 +1,32 @@
+name: Check Git Object Details
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  inspect-git:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get latest commit details
+        run: |
+          echo "Current Commit SHA: $(git rev-parse HEAD)"
+          echo "---------------------------"
+          echo "Full commit details:"
+          git show --stat HEAD
+          echo "---------------------------"
+
+      - name: Show changed files
+        run: |
+          echo "Files changed in this commit:"
+          git diff-tree --no-commit-id --name-only -r HEAD
+          
+      - name: Get commit author and message
+        run: |
+          echo "Commit Author: $(git log -1 --pretty=format:'%an <%ae>')"
+          echo "Commit Message: $(git log -1 --pretty=format:%s)"
